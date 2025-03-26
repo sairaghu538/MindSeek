@@ -9,7 +9,7 @@ import requests  # Or any other method to access DeepSeek
 def get_chatbot_response(user_input):
     url = "https://api.deepseek.com/chat"  # Replace with actual DeepSeek endpoint
     payload = {'message': user_input}
-    headers = {"Authorization": "my deepseek key"}
+    headers = {"Authorization": "sk-5c1c04b7ab514115886ffd14a04ca39a"}
     response = requests.post(url, json=payload, headers= headers)
     if response.status_code == 200:
         print(response.json()) # check if the response is as expected
