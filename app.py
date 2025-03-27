@@ -1,5 +1,5 @@
 import streamlit as st
-from google.cloud import dialogflow_v2 as dialogflow
+from google.cloud import dialogflow
 import os
 from google.oauth2 import service_account
 
