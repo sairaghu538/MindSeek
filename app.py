@@ -13,35 +13,47 @@ import requests
 # print(API_KEY)
 
 # exit
-API_KEY ="sk-5c1c04b7ab514115886ffd14a04ca39a"
 
-headers = {"Authorization": f"Bearer {API_KEY}"}  # Use Bearer if required
+# API Key
+API_KEY = "sk-5c1c04b7ab514115886ffd14a04ca39a"  # Replace with your actual key
+
+# Headers
+headers = {
+    "Authorization": f"Bearer {API_KEY}",
+    "Content-Type": "application/json"
+}
 
 # Function to get chatbot response
 def get_chatbot_response(user_input):
-    url = "https://api.deepseek.com"  # Replace with the correct API endpoint
-    payload = {'message': user_input}
-    headers = {"Authorization": f"Bearer {API_KEY}"}  # Use Bearer token if required
+    url = "https://api.deepseek.com/v1/chat/completions"  # ✅ Corrected API URL
+
+    payload = {
+        "model": "deepseek-chat",
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": user_input}
+        ],
+        "stream": False
+    }
     
     response = requests.post(url, json=payload, headers=headers)
-    print("api is loaded")
+
     if response.status_code == 200:
         response_data = response.json()
-        chatbot_response = response_data.get("response")  # Extract the chatbot reply
-        return chatbot_response  # Return response instead of printing
+        chatbot_response = response_data.get("choices", [{}])[0].get("message", {}).get("content", "No response")
+        return chatbot_response
     else:
         return f"Error: {response.status_code} - {response.text}"  # Return error details
 
 # Streamlit UI
 st.title("Mindseek Chatbot")
-st.write("""Welcome! 
-         Start chatting with the chatbot.""")
+st.write("Welcome! Start chatting with the chatbot.")
 
 # User input
 user_input = st.text_input("You: ", "")
-print(f"user input: {user_input}")
 
 if user_input:
     chatbot_response = get_chatbot_response(user_input)
-    print("Chat response recivied..")
     st.write(f"Chatbot: {chatbot_response}")
+
+
