@@ -1,38 +1,59 @@
 import streamlit as st
-from google.cloud import dialogflow
-import os
-from google.oauth2 import service_account
+import requests
+# import os
+# from dotenv import load_dotenv
 
-# Set the path to your service account key file
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "path_to_your_service_account_key.json"  # Replace with your path
+# Get API Key from environment variables
+# load_dotenv()
+# API_KEY = os.getenv("DEEPSEEK_API_KEY") # Fetch from environment
 
-# Dialogflow session ID (can be any unique string)
-SESSION_ID = "AIzaSyB4_3gz6jDF8t75Cwhsc23fQNV8vQ64GsM"
+# if not API_KEY:
+#     raise ValueError("API Key is missing! Set DEEPSEEK_API_KEY as an environment variable.")
 
-# Initialize Dialogflow client
-def get_dialogflow_response(user_input):
-    project_id = "your-project-id"  # Replace with your Google Cloud project ID
-    session_client = dialogflow.SessionsClient()
-    session = session_client.session_path(project_id, SESSION_ID)
+# print(API_KEY)
 
-    # Create the text input for the query
-    text_input = dialogflow.TextInput(text=user_input, language_code="en")
-    query_input = dialogflow.QueryInput(text=text_input)
+# exit
 
-    # Get the response from Dialogflow
-    response = session_client.detect_intent(request={"session": session, "query_input": query_input})
+# API Key
+API_KEY = "sk-5c1c04b7ab514115886ffd14a04ca39a"  # Replace with your actual key
 
-    # Extract the response text
-    chatbot_response = response.query_result.fulfillment_text
-    return chatbot_response
+# Headers
+headers = {
+    "Authorization": f"Bearer {API_KEY}",
+    "Content-Type": "application/json"
+}
+
+# Function to get chatbot response
+def get_chatbot_response(user_input):
+    url = "https://api.deepseek.com/v1/chat/completions"  # ✅ Corrected API URL
+
+    payload = {
+        "model": "deepseek-chat",
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": user_input}
+        ],
+        "stream": False
+    }
+    
+    response = requests.post(url, json=payload, headers=headers)
+
+    if response.status_code == 200:
+        response_data = response.json()
+        chatbot_response = response_data.get("choices", [{}])[0].get("message", {}).get("content", "No response")
+        return chatbot_response
+    else:
+        return f"Error: {response.status_code} - {response.text}"  # Return error details
 
 # Streamlit UI
-st.title("Google Gemini Chatbot (Dialogflow Example)")
+st.title("Mindseek Chatbot")
 st.write("Welcome! Start chatting with the chatbot.")
 
 # User input
 user_input = st.text_input("You: ", "")
 
 if user_input:
-    chatbot_response = get_dialogflow_response(user_input)
+    chatbot_response = get_chatbot_response(user_input)
     st.write(f"Chatbot: {chatbot_response}")
+
+
