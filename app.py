@@ -19,7 +19,7 @@ headers = {"Authorization": f"Bearer {API_KEY}"}  # Use Bearer if required
 
 # Function to get chatbot response
 def get_chatbot_response(user_input):
-    url = "https://api.deepseek.com/chat"  # Replace with the correct API endpoint
+    url = "https://api.deepseek.com"  # Replace with the correct API endpoint
     payload = {'message': user_input}
     headers = {"Authorization": f"Bearer {API_KEY}"}  # Use Bearer token if required
     
