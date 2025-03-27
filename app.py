@@ -3,7 +3,7 @@ import requests
 import os
 
 # Get API Key from environment variables
-API_KEY = os.getenv("DEEPSEEK_API_KEY")  # Fetch from environment
+API_KEY = "sk-5c1c04b7ab514115886ffd14a04ca39a"  # Fetch from environment
 
 if not API_KEY:
     raise ValueError("API Key is missing! Set DEEPSEEK_API_KEY as an environment variable.")
