@@ -12,7 +12,10 @@ def get_chatbot_response(user_input):
     headers = {"Authorization": "sk-5c1c04b7ab514115886ffd14a04ca39a"}
     response = requests.post(url, json=payload, headers= headers)
     if response.status_code == 200:
-        print(response.json()) # check if the response is as expected
+        response_data = response.json()
+        print(response_data) # check if the response is as expected
+        chatbot_response = response_data.get("response")
+        print("Chatbot Response:", chatbot_response)
     else:
         print(f"Error: {response.status_code}")
     
