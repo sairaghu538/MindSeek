@@ -15,7 +15,7 @@ import requests
 # exit
 
 # API Key
-API_KEY = "sk-5c1c04b7ab514115886ffd14a04ca39a"  # Replace with your actual key
+API_KEY = "Enter_your_API_KEY"  # Replace with your actual key
 
 # Headers
 headers = {
