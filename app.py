@@ -50,7 +50,7 @@ st.title("Mindseek Chatbot")
 st.write("Welcome! Start chatting with the chatbot.")
 
 # User input
-user_input = st.text_input("You: ", "")
+user_input = st.text_input("Ask Anything: ", "")
 
 if user_input:
     chatbot_response = get_chatbot_response(user_input)
