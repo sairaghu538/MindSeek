@@ -4,6 +4,23 @@ from config import GOOGLE_API_KEY, GEMINI_MODEL, MAX_TOKENS, TEMPERATURE
 import time
 from datetime import datetime
 
+# Check if API key is available
+if GOOGLE_API_KEY == "MISSING_API_KEY":
+    st.error("""
+    🚨 **API Key Missing!**
+    
+    Your MindSeek app needs a Google Gemini API key to work.
+    
+    **To fix this:**
+    1. Go to your Streamlit Cloud app settings
+    2. Add environment variable: `GOOGLE_API_KEY`
+    3. Value: Your Gemini API key from [Google AI Studio](https://aistudio.google.com/)
+    
+    **Or for local development:**
+    Create a `.env` file with: `GOOGLE_API_KEY=your_key_here`
+    """)
+    st.stop()
+
 # Configure Gemini API
 genai.configure(api_key=GOOGLE_API_KEY)
 
