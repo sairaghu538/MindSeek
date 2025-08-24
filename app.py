@@ -66,7 +66,7 @@ def process_message(prompt: str):
             response = model.generate_content(prompt)
 
             if response.text:
-                resp_time = datetime.now().strftime("%H:%M")
+                resp_time = datetime.now(ZoneInfo("US/Pacific")).strftime("%I:%M %p")
                 asst_id = f"msg_{uuid.uuid4().hex}"
                 st.session_state.messages.append({
                     "role": "assistant",
