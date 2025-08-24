@@ -38,18 +38,18 @@ def process_message(prompt):
     if not prompt or not prompt.strip():
         return
         
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    # Add user message to chat history with timestamp
+    current_time = datetime.now().strftime("%H:%M")
+    st.session_state.messages.append({
+        "role": "user", 
+        "content": prompt,
+        "timestamp": current_time,
+        "message_id": len(st.session_state.messages) + 1
+    })
     st.session_state.chat_count += 1
     
     # Display user message immediately
-    st.markdown(f"""
-    <div class="chat-message user-message">
-        <div class="user-bubble">
-            {prompt}
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    display_message("user", prompt, current_time, len(st.session_state.messages))
     
     # Get response from Gemini
     try:
@@ -57,24 +57,66 @@ def process_message(prompt):
             response = model.generate_content(prompt)
             
             if response.text:
-                # Add assistant message to chat history
-                st.session_state.messages.append({"role": "assistant", "content": response.text})
+                # Add assistant message to chat history with timestamp
+                response_time = datetime.now().strftime("%H:%M")
+                st.session_state.messages.append({
+                    "role": "assistant", 
+                    "content": response.text,
+                    "timestamp": response_time,
+                    "message_id": len(st.session_state.messages) + 1
+                })
                 st.session_state.chat_count += 1
                 
                 # Display assistant response
-                st.markdown(f"""
-                <div class="chat-message bot-message">
-                    <div class="bot-bubble">
-                        {response.text}
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                display_message("assistant", response.text, response_time, len(st.session_state.messages))
             else:
                 st.error("Sorry, I couldn't generate a response. Please try again.")
                 
     except Exception as e:
         st.error(f"Error: {str(e)}")
         st.error("There was an error connecting to the AI service. Please check your API key and try again.")
+
+# Function to display messages with enhanced styling
+def display_message(role, content, timestamp, message_id):
+    if role == "user":
+        st.markdown(f"""
+        <div class="chat-message user-message" data-message-id="{message_id}">
+            <div class="message-header">
+                <div class="user-avatar">👤</div>
+                <div class="message-info">
+                    <div class="user-name">You</div>
+                    <div class="message-time">{timestamp}</div>
+                </div>
+            </div>
+            <div class="user-bubble">
+                {content}
+            </div>
+            <div class="message-actions">
+                <button class="action-btn" onclick="copyMessage('{message_id}')" title="Copy message">📋</button>
+                <button class="action-btn" onclick="likeMessage('{message_id}')" title="Like message">👍</button>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+        <div class="chat-message bot-message" data-message-id="{message_id}">
+            <div class="message-header">
+                <div class="ai-avatar">🤖</div>
+                <div class="message-info">
+                    <div class="ai-name">MindSeek AI</div>
+                    <div class="message-time">{timestamp}</div>
+                </div>
+            </div>
+            <div class="bot-bubble">
+                {content}
+            </div>
+            <div class="message-actions">
+                <button class="action-btn" onclick="copyMessage('{message_id}')" title="Copy message">📋</button>
+                <button class="action-btn" onclick="likeMessage('{message_id}')" title="Like message">👍</button>
+                <button class="action-btn" onclick="shareMessage('{message_id}')" title="Share message">📤</button>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 # Function to handle input changes (for Enter key)
 def on_input_change():
@@ -93,7 +135,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enhanced Custom CSS for modern chat interface with ChatGPT-style input
+# Enhanced Custom CSS for ChatGPT-style interface with avatars and timestamps
 st.markdown("""
 <style>
     /* Modern Chat Interface Styles */
@@ -126,23 +168,37 @@ st.markdown("""
     }
     
     .chat-container {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         border-radius: 20px;
         padding: 2rem;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.2);
+        min-height: 500px;
     }
     
+    /* Enhanced Message Styling with Avatars and Timestamps */
     .chat-message {
-        margin: 1.5rem 0;
-        animation: fadeInUp 0.5s ease-out;
+        margin: 2rem 0;
+        animation: fadeInUp 0.6s ease-out;
+        position: relative;
+    }
+    
+    .chat-message:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        bottom: -1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent);
     }
     
     @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
         }
         to {
             opacity: 1;
@@ -150,23 +206,75 @@ st.markdown("""
         }
     }
     
+    /* Message Header with Avatar and Info */
+    .message-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        padding: 0.5rem 0;
+    }
+    
+    .user-avatar, .ai-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        flex-shrink: 0;
+    }
+    
+    .user-avatar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .ai-avatar {
+        background: linear-gradient(135deg, #00d4aa 0%, #0099cc 100%);
+        color: white;
+    }
+    
+    .message-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .user-name, .ai-name {
+        font-weight: 600;
+        font-size: 14px;
+        color: #2c3e50;
+    }
+    
+    .message-time {
+        font-size: 12px;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    /* Enhanced Message Bubbles */
     .user-message {
         display: flex;
-        justify-content: flex-end;
-        margin-bottom: 1rem;
+        flex-direction: column;
+        align-items: flex-end;
+        margin-bottom: 1.5rem;
     }
     
     .user-bubble {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 1rem 1.5rem;
+        padding: 1.25rem 1.5rem;
         border-radius: 25px 25px 5px 25px;
         max-width: 85%;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
         position: relative;
         animation: slideInRight 0.5s ease-out;
         word-wrap: break-word;
         line-height: 1.6;
+        font-size: 15px;
     }
     
     .user-bubble::before {
@@ -194,23 +302,25 @@ st.markdown("""
     
     .bot-message {
         display: flex;
-        justify-content: flex-start;
-        margin-bottom: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
     }
     
     .bot-bubble {
         background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         color: #2c3e50;
-        padding: 1rem 1.5rem;
+        padding: 1.25rem 1.5rem;
         border-radius: 25px 25px 25px 5px;
         max-width: 85%;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
         border: 1px solid rgba(0,0,0,0.05);
         position: relative;
         animation: slideInLeft 0.5s ease-out;
         word-wrap: break-word;
         line-height: 1.6;
         white-space: pre-wrap;
+        font-size: 15px;
     }
     
     .bot-bubble::before {
@@ -234,6 +344,37 @@ st.markdown("""
             opacity: 1;
             transform: translateX(0);
         }
+    }
+    
+    /* Message Action Buttons */
+    .message-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .chat-message:hover .message-actions {
+        opacity: 1;
+    }
+    
+    .action-btn {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+        border: none;
+        border-radius: 20px;
+        padding: 0.5rem 0.75rem;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .action-btn:hover {
+        background: rgba(102, 126, 234, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
     }
     
     /* ChatGPT-Style Enhanced Input Area */
@@ -395,13 +536,18 @@ st.markdown("""
     /* Responsive Design */
     @media (max-width: 768px) {
         .user-bubble, .bot-bubble {
-            max-width: 85%;
+            max-width: 90%;
         }
         .main-header {
             padding: 1.5rem;
         }
         .chat-input-container {
             padding: 1rem;
+        }
+        .message-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
         }
     }
     
@@ -428,6 +574,44 @@ st.markdown("""
     .main .block-container::-webkit-scrollbar-thumb:hover {
         background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
     }
+    
+    /* JavaScript for action buttons */
+    <script>
+    function copyMessage(messageId) {
+        const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+        const messageText = messageElement.querySelector('.user-bubble, .bot-bubble').textContent;
+        navigator.clipboard.writeText(messageText).then(() => {
+            // Show copy success
+            const btn = event.target;
+            btn.textContent = '✅';
+            setTimeout(() => btn.textContent = '📋', 2000);
+        });
+    }
+    
+    function likeMessage(messageId) {
+        const btn = event.target;
+        btn.textContent = '❤️';
+        btn.style.background = 'rgba(255, 105, 180, 0.2)';
+        btn.style.color = '#ff69b4';
+    }
+    
+    function shareMessage(messageId) {
+        const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+        const messageText = messageElement.querySelector('.user-bubble, .bot-bubble').textContent;
+        if (navigator.share) {
+            navigator.share({
+                title: 'MindSeek Chat',
+                text: messageText
+            });
+        } else {
+            // Fallback to clipboard
+            navigator.clipboard.writeText(messageText);
+            const btn = event.target;
+            btn.textContent = '✅';
+            setTimeout(() => btn.textContent = '📤', 2000);
+        }
+    }
+    </script>
 </style>
 """, unsafe_allow_html=True)
 
@@ -507,22 +691,7 @@ with chat_container:
     
     # Display chat messages with enhanced styling
     for message in st.session_state.messages:
-        if message["role"] == "user":
-            st.markdown(f"""
-            <div class="chat-message user-message">
-                <div class="user-bubble">
-                    {message["content"]}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-            <div class="chat-message bot-message">
-                <div class="bot-bubble">
-                    {message["content"]}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+        display_message(message["role"], message["content"], message["timestamp"], message["message_id"])
     
     st.markdown('</div>', unsafe_allow_html=True)
     
