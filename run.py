@@ -27,7 +27,7 @@ def main():
     
     print("✅ Configuration found!")
     print("🚀 Starting Streamlit app...")
-    print("📱 Open your browser to http://localhost:8502")
+    print("📱 Open your browser to http://localhost:8501")
     print("⏹️  Press Ctrl+C to stop")
     
     try:

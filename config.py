@@ -8,8 +8,8 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # Streamlit Configuration
-STREAMLIT_SERVER_PORT = int(os.getenv("STREAMLIT_SERVER_PORT", "8502"))
-STREAMLIT_SERVER_ADDRESS = os.getenv("STREAMLIT_SERVER_ADDRESS", "0.0.0.0")
+STREAMLIT_SERVER_PORT = int(os.getenv("STREAMLIT_SERVER_PORT", "8501"))
+STREAMLIT_SERVER_ADDRESS = os.getenv("STREAMLIT_SERVER_ADDRESS", "localhost")
 
 # Model Configuration
 GEMINI_MODEL = "gemini-1.5-flash"  # You can change this to gemini-1.5-pro for more advanced features
