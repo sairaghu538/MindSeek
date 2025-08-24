@@ -41,42 +41,274 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# Enhanced Custom CSS for modern chat interface
 st.markdown("""
 <style>
+    /* Modern Chat Interface Styles */
     .main-header {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        padding: 2.5rem;
+        border-radius: 20px;
         color: white;
         text-align: center;
         margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
     }
+    
+    .main-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    
+    .chat-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
     .chat-message {
-        padding: 1rem;
-        border-radius: 10px;
-        margin: 1rem 0;
-        border-left: 4px solid #667eea;
+        margin: 1.5rem 0;
+        animation: fadeInUp 0.5s ease-out;
     }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
     .user-message {
-        background-color: #f0f2f6;
-        border-left-color: #667eea;
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 1rem;
     }
+    
+    .user-bubble {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 25px 25px 5px 25px;
+        max-width: 70%;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        position: relative;
+        animation: slideInRight 0.5s ease-out;
+    }
+    
+    .user-bubble::before {
+        content: '';
+        position: absolute;
+        right: -8px;
+        top: 20px;
+        width: 0;
+        height: 0;
+        border-left: 10px solid #764ba2;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
     .bot-message {
-        background-color: #e8f4fd;
-        border-left-color: #764ba2;
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 1rem;
     }
+    
+    .bot-bubble {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        color: #2c3e50;
+        padding: 1rem 1.5rem;
+        border-radius: 25px 25px 25px 5px;
+        max-width: 70%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1px solid rgba(0,0,0,0.05);
+        position: relative;
+        animation: slideInLeft 0.5s ease-out;
+    }
+    
+    .bot-bubble::before {
+        content: '';
+        position: absolute;
+        left: -8px;
+        top: 20px;
+        width: 0;
+        height: 0;
+        border-right: 10px solid #ffffff;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 1rem 1.5rem;
+        background: rgba(255,255,255,0.8);
+        border-radius: 25px;
+        max-width: 70%;
+        margin: 1rem 0;
+    }
+    
+    .typing-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #667eea;
+        animation: typing 1.4s infinite ease-in-out;
+    }
+    
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    
+    @keyframes typing {
+        0%, 80%, 100% {
+            transform: scale(0.8);
+            opacity: 0.5;
+        }
+        40% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    .chat-input-container {
+        background: rgba(255,255,255,0.9);
+        border-radius: 25px;
+        padding: 1rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.3);
+        backdrop-filter: blur(10px);
+        margin-top: 2rem;
+    }
+    
+    .stTextInput > div > div > input {
+        border-radius: 20px;
+        border: 2px solid #e1e8ed;
+        padding: 0.75rem 1.5rem;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .stTextInput > div > div > input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        outline: none;
+    }
+    
     .stButton > button {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 25px;
-        padding: 0.5rem 2rem;
-        font-weight: bold;
+        border-radius: 20px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
+    
     .stButton > button:hover {
-        background: linear-gradient(90deg, #5a6fd8 0%, #6a4190 100%);
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .stButton > button:active {
+        transform: translateY(0);
+    }
+    
+    /* Enhanced Sidebar */
+    .sidebar-content {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
+        padding: 1rem;
+        border-radius: 15px;
+        text-align: center;
+        margin: 1rem 0;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .user-bubble, .bot-bubble {
+            max-width: 85%;
+        }
+        .main-header {
+            padding: 1.5rem;
+        }
+    }
+    
+    /* Scrollbar Styling */
+    .main .block-container {
+        scrollbar-width: thin;
+        scrollbar-color: #667eea #f1f1f1;
+    }
+    
+    .main .block-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .main .block-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .main .block-container::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+    }
+    
+    .main .block-container::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -88,105 +320,160 @@ if "messages" not in st.session_state:
 if "chat_count" not in st.session_state:
     st.session_state.chat_count = 0
 
-# Sidebar
+# Enhanced Sidebar
 with st.sidebar:
-    st.title("🧠 MindSeek Settings")
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="color: #667eea; font-size: 2rem; margin: 0;">🧠 MindSeek</h1>
+        <p style="color: #666; margin: 0;">AI Chat Assistant</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Model selection
+    st.markdown("### 🚀 AI Model")
     model_option = st.selectbox(
         "Choose Model:",
         ["gemini-1.5-flash", "gemini-1.5-pro"],
-        index=0
+        index=0,
+        label_visibility="collapsed"
     )
     
     # Temperature slider
+    st.markdown("### 🎭 Creativity Level")
     temperature = st.slider(
         "Creativity Level:",
         min_value=0.0,
         max_value=1.0,
         value=TEMPERATURE,
         step=0.1,
-        help="Lower values = more focused, Higher values = more creative"
+        help="Lower values = more focused, Higher values = more creative",
+        label_visibility="collapsed"
     )
     
     # Clear chat button
-    if st.button("🗑️ Clear Chat History"):
+    if st.button("🗑️ Clear Chat History", use_container_width=True):
         st.session_state.messages = []
         st.session_state.chat_count = 0
         st.rerun()
     
     # Chat statistics
-    st.markdown("---")
-    st.markdown("**Chat Statistics:**")
-    st.markdown(f"Total Messages: {st.session_state.chat_count}")
-    st.markdown(f"Current Model: {model_option}")
+    st.markdown("### 📊 Chat Statistics")
+    st.markdown(f"""
+    <div class="stats-card">
+        <h3 style="margin: 0; font-size: 1.5rem;">{st.session_state.chat_count}</h3>
+        <p style="margin: 0; opacity: 0.9;">Total Messages</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown(f"**Current Model:** {model_option}")
     
     # About section
-    st.markdown("---")
-    st.markdown("**About MindSeek:**")
-    st.markdown("Powered by Google Gemini AI")
-    st.markdown("Built with Streamlit")
+    st.markdown("### ℹ️ About")
+    st.markdown("**Powered by Google Gemini AI**")
+    st.markdown("**Built with ❤️ using Streamlit**")
 
-# Main header
+# Enhanced Main Header
 st.markdown("""
 <div class="main-header">
-    <h1>🧠 MindSeek</h1>
-    <p>Your Intelligent AI Chat Assistant</p>
+    <h1 style="margin: 0; font-size: 3rem; font-weight: 700;">🧠 MindSeek</h1>
+    <p style="margin: 0; font-size: 1.2rem; opacity: 0.9;">Your Intelligent AI Chat Assistant</p>
+    <p style="margin: 0; font-size: 1rem; opacity: 0.8;">Powered by Google Gemini AI</p>
 </div>
 """, unsafe_allow_html=True)
 
-# Chat interface
+# Enhanced Chat Interface
 chat_container = st.container()
 
 with chat_container:
-    # Display chat messages
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
     
-    # Chat input
-    if prompt := st.chat_input("Ask me anything..."):
+    # Display chat messages with enhanced styling
+    for message in st.session_state.messages:
+        if message["role"] == "user":
+            st.markdown(f"""
+            <div class="chat-message user-message">
+                <div class="user-bubble">
+                    {message["content"]}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+            <div class="chat-message bot-message">
+                <div class="bot-bubble">
+                    {message["content"]}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Enhanced Chat Input
+    st.markdown('<div class="chat-input-container">', unsafe_allow_html=True)
+    
+    if prompt := st.chat_input("Ask me anything...", key="chat_input"):
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.session_state.chat_count += 1
         
         # Display user message
-        with st.chat_message("user"):
-            st.markdown(prompt)
+        st.markdown(f"""
+        <div class="chat-message user-message">
+            <div class="user-bubble">
+                {prompt}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        # Display assistant response
-        with st.chat_message("assistant"):
-            message_placeholder = st.empty()
+        # Show typing indicator
+        with st.spinner(""):
+            st.markdown("""
+            <div class="chat-message bot-message">
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <span style="margin-left: 10px; color: #666;">AI is thinking...</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Get response from Gemini
+        try:
+            response = model.generate_content(prompt)
             
-            try:
-                # Get response from Gemini
-                response = model.generate_content(prompt)
+            if response.text:
+                # Remove typing indicator and show response
+                st.rerun()
                 
-                if response.text:
-                    # Simulate typing effect
-                    full_response = response.text
-                    for i in range(0, len(full_response), 10):
-                        message_placeholder.markdown(full_response[:i+10] + "▌")
-                        time.sleep(0.01)
-                    message_placeholder.markdown(full_response)
-                    
-                    # Add assistant message to chat history
-                    st.session_state.messages.append({"role": "assistant", "content": full_response})
-                    st.session_state.chat_count += 1
-                else:
-                    message_placeholder.error("Sorry, I couldn't generate a response. Please try again.")
-                    
-            except Exception as e:
-                error_msg = f"Error: {str(e)}"
-                message_placeholder.error(error_msg)
-                st.error("There was an error connecting to the AI service. Please check your API key and try again.")
+                # Add assistant message to chat history
+                st.session_state.messages.append({"role": "assistant", "content": response.text})
+                st.session_state.chat_count += 1
+                
+                # Display assistant response
+                st.markdown(f"""
+                <div class="chat-message bot-message">
+                    <div class="bot-bubble">
+                        {response.text}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.error("Sorry, I couldn't generate a response. Please try again.")
+                
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+            st.error("There was an error connecting to the AI service. Please check your API key and try again.")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# Footer
+# Enhanced Footer
 st.markdown("---")
 st.markdown("""
-<div style='text-align: center; color: #666; padding: 1rem;'>
-    <p>🧠 MindSeek - Powered by Google Gemini AI | Built with ❤️ using Streamlit</p>
-    <p>Last updated: {}</p>
+<div style='text-align: center; color: #666; padding: 2rem; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 15px; margin-top: 2rem;'>
+    <p style="margin: 0; font-size: 1.1rem; font-weight: 600;">🧠 MindSeek - Powered by Google Gemini AI</p>
+    <p style="margin: 0.5rem 0; opacity: 0.8;">Built with ❤️ using Streamlit</p>
+    <p style="margin: 0; font-size: 0.9rem; opacity: 0.7;">Last updated: {}</p>
 </div>
 """.format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")), unsafe_allow_html=True)
 
