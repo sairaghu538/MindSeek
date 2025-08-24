@@ -476,65 +476,74 @@ with chat_container:
     col1, col2, col3 = st.columns([4, 1, 1])
     
     with col1:
-        # Enhanced input field
+        # Enhanced input field with ENTER key support
         prompt = st.text_input(
             "Ask me anything...",
             key="chat_input",
-            placeholder="Type your message here...",
-            label_visibility="collapsed"
+            placeholder="Type your message here... (Press Enter to send)",
+            label_visibility="collapsed",
+            on_change=None
         )
     
     with col2:
-        # Action buttons (placeholder for now)
-        st.markdown("""
-        <div class="input-actions">
-            <button class="action-button" title="Attach file">📎</button>
-        </div>
-        """, unsafe_allow_html=True)
+        # File attachment button (functional)
+        if st.button("📎", key="file_button", help="Attach file (coming soon)"):
+            st.info("📎 File attachment feature coming in the next update!")
     
     with col3:
         # Send button
         if st.button("✈️", key="send_button", help="Send message"):
             if prompt:
-                # Add user message to chat history
-                st.session_state.messages.append({"role": "user", "content": prompt})
+                # Process the message
+                process_message(prompt)
+    
+    # Handle Enter key press
+    if prompt and st.session_state.get("chat_input") != prompt:
+        st.session_state["chat_input"] = prompt
+        if prompt.strip():  # Only process if not empty
+            process_message(prompt)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# Function to process messages (to avoid code duplication)
+def process_message(prompt):
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state.chat_count += 1
+    
+    # Display user message immediately
+    st.markdown(f"""
+    <div class="chat-message user-message">
+        <div class="user-bubble">
+            {prompt}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Get response from Gemini
+    try:
+        with st.spinner("🤖 AI is thinking..."):
+            response = model.generate_content(prompt)
+            
+            if response.text:
+                # Add assistant message to chat history
+                st.session_state.messages.append({"role": "assistant", "content": response.text})
                 st.session_state.chat_count += 1
                 
-                # Display user message immediately
+                # Display assistant response
                 st.markdown(f"""
-                <div class="chat-message user-message">
-                    <div class="user-bubble">
-                        {prompt}
+                <div class="chat-message bot-message">
+                    <div class="bot-bubble">
+                        {response.text}
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
+            else:
+                st.error("Sorry, I couldn't generate a response. Please try again.")
                 
-                # Get response from Gemini
-                try:
-                    with st.spinner("🤖 AI is thinking..."):
-                        response = model.generate_content(prompt)
-                        
-                        if response.text:
-                            # Add assistant message to chat history
-                            st.session_state.messages.append({"role": "assistant", "content": response.text})
-                            st.session_state.chat_count += 1
-                            
-                            # Display assistant response
-                            st.markdown(f"""
-                            <div class="chat-message bot-message">
-                                <div class="bot-bubble">
-                                    {response.text}
-                                </div>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        else:
-                            st.error("Sorry, I couldn't generate a response. Please try again.")
-                            
-                except Exception as e:
-                    st.error(f"Error: {str(e)}")
-                    st.error("There was an error connecting to the AI service. Please check your API key and try again.")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
+        st.error("There was an error connecting to the AI service. Please check your API key and try again.")
 
 # Enhanced Footer
 st.markdown("---")
