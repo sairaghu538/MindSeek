@@ -33,6 +33,58 @@ model = genai.GenerativeModel(
     )
 )
 
+# Function to process messages (defined BEFORE it's used)
+def process_message(prompt):
+    if not prompt or not prompt.strip():
+        return
+        
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state.chat_count += 1
+    
+    # Display user message immediately
+    st.markdown(f"""
+    <div class="chat-message user-message">
+        <div class="user-bubble">
+            {prompt}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Get response from Gemini
+    try:
+        with st.spinner("🤖 AI is thinking..."):
+            response = model.generate_content(prompt)
+            
+            if response.text:
+                # Add assistant message to chat history
+                st.session_state.messages.append({"role": "assistant", "content": response.text})
+                st.session_state.chat_count += 1
+                
+                # Display assistant response
+                st.markdown(f"""
+                <div class="chat-message bot-message">
+                    <div class="bot-bubble">
+                        {response.text}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.error("Sorry, I couldn't generate a response. Please try again.")
+                
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
+        st.error("There was an error connecting to the AI service. Please check your API key and try again.")
+
+# Function to handle input changes (for Enter key)
+def on_input_change():
+    if st.session_state.get("chat_input"):
+        prompt = st.session_state.chat_input.strip()
+        if prompt:
+            process_message(prompt)
+            # Clear the input after processing
+            st.session_state.chat_input = ""
+
 # Page configuration
 st.set_page_config(
     page_title="MindSeek - AI Chat Assistant",
@@ -476,13 +528,13 @@ with chat_container:
     col1, col2, col3 = st.columns([4, 1, 1])
     
     with col1:
-        # Enhanced input field with ENTER key support
+        # Enhanced input field with ENTER key support using on_change
         prompt = st.text_input(
             "Ask me anything...",
             key="chat_input",
             placeholder="Type your message here... (Press Enter to send)",
             label_visibility="collapsed",
-            on_change=None
+            on_change=on_input_change
         )
     
     with col2:
@@ -491,59 +543,15 @@ with chat_container:
             st.info("📎 File attachment feature coming in the next update!")
     
     with col3:
-        # Send button
-        if st.button("✈️", key="send_button", help="Send message"):
-            if prompt:
-                # Process the message
+        # Send button with professional send icon
+        if st.button("📤", key="send_button", help="Send message"):
+            if prompt and prompt.strip():
                 process_message(prompt)
-    
-    # Handle Enter key press
-    if prompt and st.session_state.get("chat_input") != prompt:
-        st.session_state["chat_input"] = prompt
-        if prompt.strip():  # Only process if not empty
-            process_message(prompt)
+                # Clear input after sending
+                st.session_state.chat_input = ""
+                st.rerun()
     
     st.markdown('</div>', unsafe_allow_html=True)
-
-# Function to process messages (to avoid code duplication)
-def process_message(prompt):
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    st.session_state.chat_count += 1
-    
-    # Display user message immediately
-    st.markdown(f"""
-    <div class="chat-message user-message">
-        <div class="user-bubble">
-            {prompt}
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Get response from Gemini
-    try:
-        with st.spinner("🤖 AI is thinking..."):
-            response = model.generate_content(prompt)
-            
-            if response.text:
-                # Add assistant message to chat history
-                st.session_state.messages.append({"role": "assistant", "content": response.text})
-                st.session_state.chat_count += 1
-                
-                # Display assistant response
-                st.markdown(f"""
-                <div class="chat-message bot-message">
-                    <div class="bot-bubble">
-                        {response.text}
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.error("Sorry, I couldn't generate a response. Please try again.")
-                
-    except Exception as e:
-        st.error(f"Error: {str(e)}")
-        st.error("There was an error connecting to the AI service. Please check your API key and try again.")
 
 # Enhanced Footer
 st.markdown("---")
