@@ -41,7 +41,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enhanced Custom CSS for modern chat interface
+# Enhanced Custom CSS for modern chat interface with ChatGPT-style input
 st.markdown("""
 <style>
     /* Modern Chat Interface Styles */
@@ -179,61 +179,119 @@ st.markdown("""
         }
     }
     
-    .typing-indicator {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        padding: 1rem 1.5rem;
-        background: rgba(255,255,255,0.8);
-        border-radius: 25px;
-        max-width: 70%;
-        margin: 1rem 0;
-    }
-    
-    .typing-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #667eea;
-        animation: typing 1.4s infinite ease-in-out;
-    }
-    
-    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-    
-    @keyframes typing {
-        0%, 80%, 100% {
-            transform: scale(0.8);
-            opacity: 0.5;
-        }
-        40% {
-            transform: scale(1);
-            opacity: 1;
-        }
-    }
-    
+    /* ChatGPT-Style Enhanced Input Area */
     .chat-input-container {
-        background: rgba(255,255,255,0.9);
+        background: rgba(255,255,255,0.95);
         border-radius: 25px;
-        padding: 1rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        border: 1px solid rgba(255,255,255,0.3);
-        backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        border: 2px solid rgba(255,255,255,0.3);
+        backdrop-filter: blur(15px);
         margin-top: 2rem;
-    }
-    
-    .stTextInput > div > div > input {
-        border-radius: 20px;
-        border: 2px solid #e1e8ed;
-        padding: 0.75rem 1.5rem;
-        font-size: 16px;
+        position: relative;
         transition: all 0.3s ease;
     }
     
-    .stTextInput > div > div > input:focus {
+    .chat-input-container:hover {
+        box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        transform: translateY(-2px);
+    }
+    
+    .chat-input-container:focus-within {
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
+    .input-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: #f8f9fa;
+        border-radius: 20px;
+        padding: 0.5rem;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .input-wrapper:focus-within {
+        background: white;
         border-color: #667eea;
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        outline: none;
+    }
+    
+    .stTextInput > div > div > input {
+        border: none !important;
+        background: transparent !important;
+        border-radius: 15px !important;
+        padding: 1rem 1.5rem !important;
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        color: #2c3e50 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    
+    .stTextInput > div > div > input:focus {
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    
+    .stTextInput > div > div > input::placeholder {
+        color: #6c757d !important;
+        font-weight: 400 !important;
+    }
+    
+    .send-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        font-size: 18px;
+    }
+    
+    .send-button:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .send-button:active {
+        transform: scale(0.95);
+    }
+    
+    .input-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .action-button {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 16px;
+    }
+    
+    .action-button:hover {
+        background: rgba(102, 126, 234, 0.2);
+        transform: scale(1.05);
     }
     
     .stButton > button {
@@ -285,6 +343,9 @@ st.markdown("""
         .main-header {
             padding: 1.5rem;
         }
+        .chat-input-container {
+            padding: 1rem;
+        }
     }
     
     /* Scrollbar Styling */
@@ -298,7 +359,6 @@ st.markdown("""
     }
     
     .main .block-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
         background: #f1f1f1;
         border-radius: 10px;
     }
@@ -409,47 +469,70 @@ with chat_container:
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Enhanced Chat Input
+    # ChatGPT-Style Enhanced Chat Input
     st.markdown('<div class="chat-input-container">', unsafe_allow_html=True)
     
-    if prompt := st.chat_input("Ask me anything...", key="chat_input"):
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        st.session_state.chat_count += 1
-        
-        # Display user message immediately
-        st.markdown(f"""
-        <div class="chat-message user-message">
-            <div class="user-bubble">
-                {prompt}
-            </div>
+    # Create columns for input and buttons
+    col1, col2, col3 = st.columns([4, 1, 1])
+    
+    with col1:
+        # Enhanced input field
+        prompt = st.text_input(
+            "Ask me anything...",
+            key="chat_input",
+            placeholder="Type your message here...",
+            label_visibility="collapsed"
+        )
+    
+    with col2:
+        # Action buttons (placeholder for now)
+        st.markdown("""
+        <div class="input-actions">
+            <button class="action-button" title="Attach file">📎</button>
         </div>
         """, unsafe_allow_html=True)
-        
-        # Get response from Gemini
-        try:
-            with st.spinner("🤖 AI is thinking..."):
-                response = model.generate_content(prompt)
+    
+    with col3:
+        # Send button
+        if st.button("✈️", key="send_button", help="Send message"):
+            if prompt:
+                # Add user message to chat history
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                st.session_state.chat_count += 1
                 
-                if response.text:
-                    # Add assistant message to chat history
-                    st.session_state.messages.append({"role": "assistant", "content": response.text})
-                    st.session_state.chat_count += 1
-                    
-                    # Display assistant response
-                    st.markdown(f"""
-                    <div class="chat-message bot-message">
-                        <div class="bot-bubble">
-                            {response.text}
-                        </div>
+                # Display user message immediately
+                st.markdown(f"""
+                <div class="chat-message user-message">
+                    <div class="user-bubble">
+                        {prompt}
                     </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    st.error("Sorry, I couldn't generate a response. Please try again.")
-                    
-        except Exception as e:
-            st.error(f"Error: {str(e)}")
-            st.error("There was an error connecting to the AI service. Please check your API key and try again.")
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Get response from Gemini
+                try:
+                    with st.spinner("🤖 AI is thinking..."):
+                        response = model.generate_content(prompt)
+                        
+                        if response.text:
+                            # Add assistant message to chat history
+                            st.session_state.messages.append({"role": "assistant", "content": response.text})
+                            st.session_state.chat_count += 1
+                            
+                            # Display assistant response
+                            st.markdown(f"""
+                            <div class="chat-message bot-message">
+                                <div class="bot-bubble">
+                                    {response.text}
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                        else:
+                            st.error("Sorry, I couldn't generate a response. Please try again.")
+                            
+                except Exception as e:
+                    st.error(f"Error: {str(e)}")
+                    st.error("There was an error connecting to the AI service. Please check your API key and try again.")
     
     st.markdown('</div>', unsafe_allow_html=True)
 
