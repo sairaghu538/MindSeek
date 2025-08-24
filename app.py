@@ -77,7 +77,13 @@ def process_message(prompt):
         st.error("There was an error connecting to the AI service. Please check your API key and try again.")
 
 # Function to display messages with enhanced styling
-def display_message(role, content, timestamp, message_id):
+def display_message(role, content, timestamp=None, message_id=None):
+    # Handle old message format (without timestamp/message_id)
+    if timestamp is None:
+        timestamp = "Now"
+    if message_id is None:
+        message_id = "msg_" + str(time.time())
+    
     if role == "user":
         st.markdown(f"""
         <div class="chat-message user-message" data-message-id="{message_id}">
@@ -691,7 +697,10 @@ with chat_container:
     
     # Display chat messages with enhanced styling
     for message in st.session_state.messages:
-        display_message(message["role"], message["content"], message["timestamp"], message["message_id"])
+        # Handle both old and new message formats
+        timestamp = message.get("timestamp", "Now")
+        message_id = message.get("message_id", f"msg_{len(st.session_state.messages)}")
+        display_message(message["role"], message["content"], timestamp, message_id)
     
     st.markdown('</div>', unsafe_allow_html=True)
     
