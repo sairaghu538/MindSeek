@@ -299,6 +299,7 @@ st.markdown("""
     
     .main .block-container::-webkit-scrollbar-track {
         background: #f1f1f1;
+        background: #f1f1f1;
         border-radius: 10px;
     }
     
@@ -416,7 +417,7 @@ with chat_container:
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.session_state.chat_count += 1
         
-        # Display user message
+        # Display user message immediately
         st.markdown(f"""
         <div class="chat-message user-message">
             <div class="user-bubble">
@@ -425,42 +426,27 @@ with chat_container:
         </div>
         """, unsafe_allow_html=True)
         
-        # Show typing indicator
-        with st.spinner(""):
-            st.markdown("""
-            <div class="chat-message bot-message">
-                <div class="typing-indicator">
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <span style="margin-left: 10px; color: #666;">AI is thinking...</span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-        
         # Get response from Gemini
         try:
-            response = model.generate_content(prompt)
-            
-            if response.text:
-                # Remove typing indicator and show response
-                st.rerun()
+            with st.spinner("🤖 AI is thinking..."):
+                response = model.generate_content(prompt)
                 
-                # Add assistant message to chat history
-                st.session_state.messages.append({"role": "assistant", "content": response.text})
-                st.session_state.chat_count += 1
-                
-                # Display assistant response
-                st.markdown(f"""
-                <div class="chat-message bot-message">
-                    <div class="bot-bubble">
-                        {response.text}
+                if response.text:
+                    # Add assistant message to chat history
+                    st.session_state.messages.append({"role": "assistant", "content": response.text})
+                    st.session_state.chat_count += 1
+                    
+                    # Display assistant response
+                    st.markdown(f"""
+                    <div class="chat-message bot-message">
+                        <div class="bot-bubble">
+                            {response.text}
+                        </div>
                     </div>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.error("Sorry, I couldn't generate a response. Please try again.")
-                
+                    """, unsafe_allow_html=True)
+                else:
+                    st.error("Sorry, I couldn't generate a response. Please try again.")
+                    
         except Exception as e:
             st.error(f"Error: {str(e)}")
             st.error("There was an error connecting to the AI service. Please check your API key and try again.")
