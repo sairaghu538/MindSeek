@@ -82,8 +82,8 @@ def on_input_change():
         prompt = st.session_state.chat_input.strip()
         if prompt:
             process_message(prompt)
-            # Clear the input after processing
-            st.session_state.chat_input = ""
+            # Mark that we need to clear input (can't do it here due to Streamlit restrictions)
+            st.session_state["clear_input"] = True
 
 # Page configuration
 st.set_page_config(
@@ -161,10 +161,12 @@ st.markdown("""
         color: white;
         padding: 1rem 1.5rem;
         border-radius: 25px 25px 5px 25px;
-        max-width: 70%;
+        max-width: 85%;
         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         position: relative;
         animation: slideInRight 0.5s ease-out;
+        word-wrap: break-word;
+        line-height: 1.6;
     }
     
     .user-bubble::before {
@@ -201,11 +203,14 @@ st.markdown("""
         color: #2c3e50;
         padding: 1rem 1.5rem;
         border-radius: 25px 25px 25px 5px;
-        max-width: 70%;
+        max-width: 85%;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         border: 1px solid rgba(0,0,0,0.05);
         position: relative;
         animation: slideInLeft 0.5s ease-out;
+        word-wrap: break-word;
+        line-height: 1.6;
+        white-space: pre-wrap;
     }
     
     .bot-bubble::before {
@@ -521,6 +526,11 @@ with chat_container:
     
     st.markdown('</div>', unsafe_allow_html=True)
     
+    # Handle input clearing after message sent
+    if st.session_state.get("clear_input"):
+        st.session_state.chat_input = ""
+        st.session_state["clear_input"] = False
+    
     # ChatGPT-Style Enhanced Chat Input
     st.markdown('<div class="chat-input-container">', unsafe_allow_html=True)
     
@@ -547,8 +557,8 @@ with chat_container:
         if st.button("📤", key="send_button", help="Send message"):
             if prompt and prompt.strip():
                 process_message(prompt)
-                # Clear input after sending
-                st.session_state.chat_input = ""
+                # Mark that we need to clear input
+                st.session_state["clear_input"] = True
                 st.rerun()
     
     st.markdown('</div>', unsafe_allow_html=True)
