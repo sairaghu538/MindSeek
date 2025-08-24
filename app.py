@@ -153,12 +153,12 @@ st.markdown("""
 <style>
     .main-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-        padding: 2.5rem;
-        border-radius: 20px;
+        padding: 1.6rem;
+        border-radius: 15px;
         color: white;
         text-align: center;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        margin-bottom: 1.5rem;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
         position: relative;
         overflow: hidden;
     }
@@ -177,7 +177,7 @@ st.markdown("""
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.2);
-        min-height: 500px;
+        min-height: 200px;
     }
     .chat-message { margin: 2rem 0; animation: fadeInUp 0.6s ease-out; position: relative; }
     .chat-message:not(:last-child)::after {
@@ -288,7 +288,7 @@ if "chat_count" not in st.session_state:
 with st.sidebar:
     st.markdown("""
     <div style="text-align: center; margin-bottom: 2rem;">
-        <h1 style="color: #667eea; font-size: 2rem; margin: 0;">🧠 MindSeek</h1>
+        <h1 style="color: #667eea; font-size: 2rem; margin: 0;">🤖 MindSeek</h1>
         <p style="color: #666; margin: 0;">AI Chat Assistant</p>
     </div>
     """, unsafe_allow_html=True)
@@ -333,7 +333,7 @@ with st.sidebar:
 # ---------- Header ----------
 st.markdown("""
 <div class="main-header">
-    <h1 style="margin: 0; font-size: 3rem; font-weight: 700;">🧠 MindSeek</h1>
+    <h1 style="margin: 0; font-size: 3rem; font-weight: 700;"> 🤖 MindSeek</h1>
     <p style="margin: 0; font-size: 1.2rem; opacity: 0.9;">Your Intelligent AI Chat Assistant</p>
     <p style="margin: 0; font-size: 1rem; opacity: 0.8;">Powered by Google Gemini AI</p>
 </div>
