@@ -5,6 +5,7 @@ import google.generativeai as genai
 from config import GOOGLE_API_KEY, GEMINI_MODEL, MAX_TOKENS, TEMPERATURE
 import time
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 # ---------- Safety / API key ----------
 if GOOGLE_API_KEY == "MISSING_API_KEY":
@@ -50,7 +51,7 @@ def process_message(prompt: str):
     if not prompt or not prompt.strip():
         return
 
-    now = datetime.now().strftime("%H:%M")
+    now = datetime.now(ZoneInfo("US/Pacific")).strftime("%H:%M")
     user_id = f"msg_{uuid.uuid4().hex}"
     st.session_state.messages.append({
         "role": "user",
