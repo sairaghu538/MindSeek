@@ -49,48 +49,47 @@ def process_message(prompt: str):
     if not prompt or not prompt.strip():
         return
 
-    # add user message
-    current_time = datetime.now().strftime("%H:%M")
+    now = datetime.now().strftime("%H:%M")
+    uid_user = f"msg_{int(time.time()*1000)}_{len(st.session_state.messages)}"
+
     st.session_state.messages.append({
         "role": "user",
         "content": prompt,
-        "timestamp": current_time,
-        "message_id": len(st.session_state.messages) + 1
+        "timestamp": now,
+        "message_id": uid_user
     })
     st.session_state.chat_count += 1
 
-    # render user
-    display_message("user", prompt, current_time, len(st.session_state.messages))
+    display_message("user", prompt, now, uid_user)
 
-    # model call
     try:
         with st.spinner("🤖 AI is thinking..."):
             response = model.generate_content(prompt)
 
             if response.text:
-                response_time = datetime.now().strftime("%H:%M")
+                resp_time = datetime.now().strftime("%H:%M")
+                uid_assist = f"msg_{int(time.time()*1000)}_{len(st.session_state.messages)}"
                 st.session_state.messages.append({
                     "role": "assistant",
                     "content": response.text,
-                    "timestamp": response_time,
-                    "message_id": len(st.session_state.messages) + 1
+                    "timestamp": resp_time,
+                    "message_id": uid_assist
                 })
                 st.session_state.chat_count += 1
-
-                # render assistant
-                display_message("assistant", response.text, response_time, len(st.session_state.messages))
+                display_message("assistant", response.text, resp_time, uid_assist)
             else:
                 st.error("Sorry, I couldn't generate a response. Try again.")
     except Exception as e:
         st.error(f"Error: {str(e)}")
         st.error("There was an error connecting to the AI service. Please check your API key and try again.")
 
-def display_message(role, content, timestamp=None, message_id=None):
-    """Render a bubble and (for assistant only) a Streamlit Copy button."""
+
+def display_message(role, content, timestamp=None, message_id=None, idx=None):
     if timestamp is None:
         timestamp = "Now"
     if message_id is None:
-        message_id = "msg_" + str(time.time())
+        # unique fallback
+        message_id = f"msg_{int(time.time() * 1000)}_{idx or 0}"
 
     if role == "user":
         st.markdown(f"""
@@ -107,7 +106,8 @@ def display_message(role, content, timestamp=None, message_id=None):
             </div>
         </div>
         """, unsafe_allow_html=True)
-    else:
+
+    else:  # assistant
         st.markdown(f"""
         <div class="chat-message bot-message" data-message-id="{message_id}">
             <div class="message-header">
@@ -123,15 +123,14 @@ def display_message(role, content, timestamp=None, message_id=None):
         </div>
         """, unsafe_allow_html=True)
 
-        # Assistant-only copy
-        copy_col, _ = st.columns([1, 9])
-        with copy_col:
-            if st.button("📋 Copy", key=f"copy-{message_id}"):
-                _copy_to_clipboard(content)
-                try:
-                    st.toast("Copied")
-                except Exception:
-                    st.success("Copied")
+        # Assistant-only copy button with a unique key
+        if st.button("📋 Copy", key=f"copy-{message_id}"):
+            _copy_to_clipboard(content)
+            try:
+                st.toast("Copied")
+            except Exception:
+                st.success("Copied")
+
 
 def on_input_change():
     if st.session_state.get("chat_input"):
@@ -344,10 +343,11 @@ chat_container = st.container()
 with chat_container:
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 
-    for message in st.session_state.messages:
+    for i, message in enumerate(st.session_state.messages):
         timestamp = message.get("timestamp", "Now")
-        message_id = message.get("message_id", f"msg_{len(st.session_state.messages)}")
-        display_message(message["role"], message["content"], timestamp, message_id)
+        message_id = message.get("message_id")  # may be None for older messages
+        display_message(message["role"], message["content"], timestamp, message_id, idx=i)
+
 
     st.markdown('</div>', unsafe_allow_html=True)
 
