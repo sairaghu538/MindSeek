@@ -3,4 +3,3 @@ google-generativeai
 python-dotenv
 requests
 streamlit-option-menu
-feedparser

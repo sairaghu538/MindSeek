@@ -3,7 +3,6 @@ import google.generativeai as genai
 from config import GOOGLE_API_KEY, GEMINI_MODEL, MAX_TOKENS, TEMPERATURE
 import time
 from datetime import datetime
-from news import fetch_news, TOPIC_MAP
 
 # Check if API key is available
 if GOOGLE_API_KEY == "MISSING_API_KEY":
@@ -173,24 +172,7 @@ st.markdown("""
         0% { transform: translateX(-100%); }
         100% { transform: translateX(100%); }
     }
-    if show_news:
-    news_items = fetch_news(
-        topic_key=topic,
-        country=country,
-        language=language,
-        limit=count,
-        display_tz="US/Pacific",  # or make selectable later
-    )
-    st.markdown(f"#### 📰 {topic} — {country}/{language.upper()}")
-    for n in news_items:
-        with st.container(border=True):
-            st.markdown(f"**[{n['title']}]({n['link']})**")
-            meta = " · ".join(filter(None, [n["source"], f"{n['time']} PT" if n['time'] else ""]))
-            if meta:
-                st.caption(meta)
-            if n["summary"]:
-                st.write(n["summary"])
-
+    
     .chat-container {
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         border-radius: 20px;
@@ -690,13 +672,6 @@ with st.sidebar:
         <p style="margin: 0; opacity: 0.9;">Total Messages</p>
     </div>
     """, unsafe_allow_html=True)
-     # 👇 Add news controls here
-    st.markdown("### 📰 News")
-    topic = st.selectbox("Category", list(TOPIC_MAP.keys()), index=1)   # default "World"
-    country = st.selectbox("Country", ["US", "IN", "GB", "CA", "AU", "SG", "ZA", "DE", "FR"], index=0)
-    language = st.selectbox("Language", ["en", "hi", "es", "fr", "de"], index=0)
-    count = st.slider("Headlines", 3, 15, 8, 1)
-    show_news = st.checkbox("Show news panel", value=False)
     
     st.markdown(f"**Current Model:** {model_option}")
     
