@@ -131,175 +131,193 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enhanced Custom CSS for ChatGPT-style interface with avatars and timestamps
-st.markdown("""
-<style>
-    /* Global Settings & Dark Theme */
-    .stApp {
-        background-color: #0e1117;
-        background-image: radial-gradient(circle at 50% 0%, #1c2029 0%, #0e1117 100%);
-        color: #fafafa;
-    }
-    
-    /* Sidebar styling */
-    [data-testid="stSidebar"] {
-        background-color: #161b24;
-        border-right: 1px solid #2d3748;
-    }
-    
-    [data-testid="stSidebar"] h1 {
-        color: #fff;
-    }
-    
-    [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
-        color: #a0aec0;
-    }
-    
-    /* Main Header Styling */
-    .main-header {
-        background: transparent;
-        padding: 1rem 0 3rem 0;
-        text-align: left;
-    }
-    
-    .main-header h1 {
-        font-size: 3.5rem;
-        font-weight: 800;
-        background: linear-gradient(90deg, #fff 0%, #a5b4fc 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
-    }
-    
-    .main-header p {
-        color: #94a3b8;
-        font-size: 1.2rem;
-        font-weight: 400;
-    }
+# Theme Toggle in Sidebar
+with st.sidebar:
+    st.markdown("### 🎨 Theme Configuration")
+    dark_mode = st.toggle("🌙 Dark Mode", value=False)
+    st.divider()
 
-    /* Card-like Containers */
-    .chat-container {
-        background-color: #1e2530;
-        border: 1px solid #2d3748;
-        border-radius: 16px;
-        padding: 2rem;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    }
-    
-    /* Message Bubbles - Dark Mode Premium */
-    .user-message {
-        align-items: flex-end;
-        margin-bottom: 1.5rem;
-    }
-    
-    .user-bubble {
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); /* Indigo to Purple */
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 16px 16px 2px 16px;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        max-width: 80%;
-        line-height: 1.6;
-    }
-    
-    .bot-message {
-        align-items: flex-start;
-        margin-bottom: 1.5rem;
-    }
-    
-    .bot-bubble {
-        background-color: #2d3748;
-        color: #e2e8f0;
-        padding: 1rem 1.5rem;
-        border-radius: 16px 16px 16px 2px;
-        border: 1px solid #4a5568;
-        max-width: 80%;
-        line-height: 1.6;
-    }
-    
-    /* Avatar Styling */
-    .user-avatar {
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        width: 36px;
-        height: 36px;
-        font-size: 18px;
-    }
-    
-    .ai-avatar {
-        background: #4a5568;
-        color: #a5b4fc;
-        width: 36px;
-        height: 36px;
-        font-size: 18px;
-    }
-    
-    /* Input Area - Control Center Style */
-    .chat-input-container {
-        background-color: #161b24;
-        border: 1px solid #2d3748;
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin-top: 2rem;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-    }
-    
-    .stTextInput input {
-        background-color: #0e1117 !important;
-        color: #fff !important;
-        border: 1px solid #2d3748 !important;
-        border-radius: 8px !important;
-        padding: 0.8rem 1rem !important;
-    }
-    
-    .stTextInput input:focus {
-        border-color: #6366f1 !important;
-        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
-    }
-    
-    /* Buttons - Neon Actions */
-    .stButton > button {
-        background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
-        color: white;
-        border: none;
-        padding: 0.6rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
-    }
-    
-    /* Selectbox customization for dark mode */
-    div[data-baseweb="select"] > div {
-        background-color: #0e1117;
-        color: white;
-        border-color: #2d3748;
-    }
-    
-    div[data-baseweb="popover"] {
-        background-color: #1a202c;
-    }
-    
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-        width: 10px;
-        background: #0e1117;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: #2d3748;
-        border-radius: 5px;
-    }
+# CSS Configuration
+if dark_mode:
+    # Premium Dark Theme
+    css = """
+    <style>
+        /* Global Settings & Dark Theme */
+        .stApp {
+            background-color: #0e1117;
+            background-image: radial-gradient(circle at 50% 0%, #1c2029 0%, #0e1117 100%);
+            color: #fafafa;
+        }
+        
+        [data-testid="stSidebar"] {
+            background-color: #161b24;
+            border-right: 1px solid #2d3748;
+        }
+        
+        [data-testid="stSidebar"] h1, [data-testid="stSidebar"] p {
+             color: #e2e8f0 !important;
+        }
+        
+        /* Main Header */
+        .main-header {
+            background: transparent;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .main-header h1 {
+            background: linear-gradient(90deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .main-header p {
+            color: #94a3b8;
+        }
 
-    /* Helper utility to hide Streamlit branding if desired */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-</style>
-""", unsafe_allow_html=True)
+        /* Message Bubbles - Dark */
+        .user-message {
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+        }
+        
+        .user-bubble {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 16px 16px 2px 16px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .bot-bubble {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem 1.5rem;
+            border-radius: 16px 16px 16px 2px;
+            border: 1px solid #4a5568;
+        }
+        
+        /* Avatars */
+        .user-avatar { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; }
+        .ai-avatar { background: #4a5568; color: #a5b4fc; }
+        
+        /* Inputs & Buttons */
+        .stTextInput input {
+            background-color: #0e1117 !important;
+            color: white !important;
+            border: 1px solid #2d3748 !important;
+        }
+        
+        .stButton > button {
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+        }
+        
+        .chat-input-container {
+            background-color: #161b24;
+            border: 1px solid #2d3748;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        /* Helper to hide footer */
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+    </style>
+    """
+else:
+    # Glassmorphism Light Theme (Original)
+    css = """
+    <style>
+        /* Global Settings & Light Theme */
+        .stApp {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
+        }
+
+        /* Glass Sidebar */
+        [data-testid="stSidebar"] {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Header */
+        .main-header {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(15px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        /* Message Bubbles - Light */
+        .user-message {
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+        }
+        
+        .user-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 20px 20px 0 20px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .bot-bubble {
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            padding: 1rem 1.5rem;
+            border-radius: 20px 20px 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Avatars */
+        .user-avatar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .ai-avatar { background: white; color: #333; }
+        
+        /* Input Area */
+        .chat-input-container {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            margin-top: 2rem;
+        }
+        
+        .stTextInput input {
+            background: rgba(255, 255, 255, 0.7) !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(0,0,0,0.1) !important;
+            color: #2c3e50 !important;
+        }
+        
+        .stButton > button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0.75rem 2rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
+    </style>
+    """
+
+st.markdown(css, unsafe_allow_html=True)
 
 # Initialize session state for chat history
 if "messages" not in st.session_state:
