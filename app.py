@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 from config import GOOGLE_API_KEY, GEMINI_MODEL, MAX_TOKENS, TEMPERATURE
 import time
 from datetime import datetime
@@ -22,16 +22,8 @@ if GOOGLE_API_KEY == "MISSING_API_KEY":
     st.stop()
 
 # Configure Gemini API
-genai.configure(api_key=GOOGLE_API_KEY)
-
-# Initialize Gemini model
-model = genai.GenerativeModel(
-    model_name=GEMINI_MODEL,
-    generation_config=genai.types.GenerationConfig(
-        max_output_tokens=MAX_TOKENS,
-        temperature=TEMPERATURE,
-    )
-)
+# Configure Gemini Client
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 # Function to process messages (defined BEFORE it's used)
 def process_message(prompt):
@@ -54,7 +46,14 @@ def process_message(prompt):
     # Get response from Gemini
     try:
         with st.spinner("🤖 AI is thinking..."):
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model=GEMINI_MODEL,
+                contents=prompt,
+                config=genai.types.GenerateContentConfig(
+                    max_output_tokens=MAX_TOKENS,
+                    temperature=TEMPERATURE,
+                )
+            )
             
             if response.text:
                 # Add assistant message to chat history with timestamp
