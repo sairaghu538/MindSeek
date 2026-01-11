@@ -134,121 +134,170 @@ st.set_page_config(
 # Enhanced Custom CSS for ChatGPT-style interface with avatars and timestamps
 st.markdown("""
 <style>
-    /* Glassmorphism Global Styles */
+    /* Global Settings & Dark Theme */
     .stApp {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background-color: #0e1117;
+        background-image: radial-gradient(circle at 50% 0%, #1c2029 0%, #0e1117 100%);
+        color: #fafafa;
     }
-
-    /* Glass Sidebar */
+    
+    /* Sidebar styling */
     [data-testid="stSidebar"] {
-        background: rgba(255, 255, 255, 0.65);
-        backdrop-filter: blur(20px);
-        border-right: 1px solid rgba(255, 255, 255, 0.3);
+        background-color: #161b24;
+        border-right: 1px solid #2d3748;
     }
     
-    /* Modern Glass Headers */
+    [data-testid="stSidebar"] h1 {
+        color: #fff;
+    }
+    
+    [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
+        color: #a0aec0;
+    }
+    
+    /* Main Header Styling */
     .main-header {
-        background: rgba(255, 255, 255, 0.25);
-        backdrop-filter: blur(15px);
-        padding: 2.5rem;
-        border-radius: 20px;
-        color: #2c3e50;
-        text-align: center;
-        margin-bottom: 2rem;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: transparent;
+        padding: 1rem 0 3rem 0;
+        text-align: left;
     }
     
-    /* Glass Chat Container */
-    .chat-container {
-        background: rgba(255, 255, 255, 0.25);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-        backdrop-filter: blur(4px);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        padding: 2rem;
-        min-height: 500px;
+    .main-header h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #fff 0%, #a5b4fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
     }
     
-    /* Input Container Glass */
-    .chat-input-container {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(20px);
-        border-radius: 25px;
-        padding: 1.5rem;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        margin-top: 2rem;
-    }
-    
-    /* Inputs & Selectboxes */
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
-        background: rgba(255, 255, 255, 0.7);
-        border-radius: 12px;
-        border: 1px solid rgba(0,0,0,0.1);
-        backdrop-filter: blur(4px);
-    }
-    
-    /* Sliders */
-    .stSlider > div > div > div > div {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    .main-header p {
+        color: #94a3b8;
+        font-size: 1.2rem;
+        font-weight: 400;
     }
 
-    /* Message Bubbles */
+    /* Card-like Containers */
+    .chat-container {
+        background-color: #1e2530;
+        border: 1px solid #2d3748;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Message Bubbles - Dark Mode Premium */
+    .user-message {
+        align-items: flex-end;
+        margin-bottom: 1.5rem;
+    }
+    
     .user-bubble {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); /* Indigo to Purple */
         color: white;
-        padding: 1.25rem 1.5rem;
-        border-radius: 20px 20px 0 20px;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
-        max-width: 85%;
-        margin-left: auto;
+        padding: 1rem 1.5rem;
+        border-radius: 16px 16px 2px 16px;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        max-width: 80%;
+        line-height: 1.6;
+    }
+    
+    .bot-message {
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
     }
     
     .bot-bubble {
-        background: rgba(255, 255, 255, 0.9);
-        color: #2c3e50;
-        padding: 1.25rem 1.5rem;
-        border-radius: 20px 20px 20px 0;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        max-width: 85%;
+        background-color: #2d3748;
+        color: #e2e8f0;
+        padding: 1rem 1.5rem;
+        border-radius: 16px 16px 16px 2px;
+        border: 1px solid #4a5568;
+        max-width: 80%;
+        line-height: 1.6;
     }
     
-    /* Avatars */
-    .user-avatar, .ai-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    /* Avatar Styling */
+    .user-avatar {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
     }
     
-    .user-avatar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-    .ai-avatar { background: white; color: #333; }
+    .ai-avatar {
+        background: #4a5568;
+        color: #a5b4fc;
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
     
-    /* Message Layout */
-    .chat-message { margin: 1.5rem 0; display: flex; flex-direction: column; }
-    .user-message { align-items: flex-end; }
-    .bot-message { align-items: flex-start; }
+    /* Input Area - Control Center Style */
+    .chat-input-container {
+        background-color: #161b24;
+        border: 1px solid #2d3748;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+    }
     
-    .message-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
-        opacity: 0.8;
+    .stTextInput input {
+        background-color: #0e1117 !important;
+        color: #fff !important;
+        border: 1px solid #2d3748 !important;
+        border-radius: 8px !important;
+        padding: 0.8rem 1rem !important;
+    }
+    
+    .stTextInput input:focus {
+        border-color: #6366f1 !important;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+    }
+    
+    /* Buttons - Neon Actions */
+    .stButton > button {
+        background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
+    }
+    
+    /* Selectbox customization for dark mode */
+    div[data-baseweb="select"] > div {
+        background-color: #0e1117;
+        color: white;
+        border-color: #2d3748;
+    }
+    
+    div[data-baseweb="popover"] {
+        background-color: #1a202c;
     }
     
     /* Scrollbar */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
+    ::-webkit-scrollbar {
+        width: 10px;
+        background: #0e1117;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #2d3748;
+        border-radius: 5px;
+    }
+
+    /* Helper utility to hide Streamlit branding if desired */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -263,8 +312,8 @@ if "chat_count" not in st.session_state:
 with st.sidebar:
     st.markdown("""
     <div style="text-align: center; margin-bottom: 2rem;">
-        <h1 style="color: #667eea; font-size: 2rem; margin: 0;">🧠 MindSeek</h1>
-        <p style="color: #666; margin: 0;">AI Chat Assistant</p>
+        <h1 style="font-size: 2rem; margin: 0;">🧠 MindSeek</h1>
+        <p style="margin: 0;">AI Chat Assistant</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -329,9 +378,9 @@ with st.sidebar:
 # Enhanced Main Header
 st.markdown("""
 <div class="main-header">
-    <h1 style="margin: 0; font-size: 3rem; font-weight: 700;">🧠 MindSeek</h1>
-    <p style="margin: 0; font-size: 1.2rem; opacity: 0.9;">Your Intelligent AI Chat Assistant</p>
-    <p style="margin: 0; font-size: 1rem; opacity: 0.8;">Powered by Google Gemini AI</p>
+    <h1>🧠 MindSeek</h1>
+    <p>Your Intelligent AI Chat Assistant</p>
+    <p style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.6;">Powered by Google Gemini AI</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -339,7 +388,7 @@ st.markdown("""
 chat_container = st.container()
 
 with chat_container:
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+
     
     # Display chat messages with enhanced styling
     for message in st.session_state.messages:
@@ -348,15 +397,13 @@ with chat_container:
         message_id = message.get("message_id", f"msg_{len(st.session_state.messages)}")
         display_message(message["role"], message["content"], timestamp, message_id)
     
-    st.markdown('</div>', unsafe_allow_html=True)
-    
     # Handle input clearing after message sent
     if st.session_state.get("clear_input"):
         st.session_state.chat_input = ""
         st.session_state["clear_input"] = False
     
     # ChatGPT-Style Enhanced Chat Input
-    st.markdown('<div class="chat-input-container">', unsafe_allow_html=True)
+
     
     # Create columns for input and buttons
     col1, col2, col3 = st.columns([4, 1, 1])
@@ -384,8 +431,6 @@ with chat_container:
                 # Mark that we need to clear input
                 st.session_state["clear_input"] = True
                 st.rerun()
-    
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # Enhanced Footer
 st.markdown("---")
