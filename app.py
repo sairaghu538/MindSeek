@@ -640,7 +640,7 @@ with st.sidebar:
     st.markdown("### 🚀 AI Model")
     model_option = st.selectbox(
         "Choose Model:",
-        ["gemini-1.5-flash", "gemini-1.5-pro"],
+        ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"],
         index=0,
         label_visibility="collapsed"
     )
