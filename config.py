@@ -12,7 +12,7 @@ STREAMLIT_SERVER_PORT = int(os.getenv("STREAMLIT_SERVER_PORT", "8501"))
 STREAMLIT_SERVER_ADDRESS = os.getenv("STREAMLIT_SERVER_ADDRESS", "localhost")
 
 # Model Configuration
-GEMINI_MODEL = "gemini-2.0-flash"  # Updated to available model
+GEMINI_MODEL = "gemini-2.5-flash"  # Testing newer model availability
 MAX_TOKENS = 1000
 TEMPERATURE = 0.7
 
