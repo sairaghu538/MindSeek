@@ -678,6 +678,21 @@ with st.sidebar:
     st.markdown("### ℹ️ About")
     st.markdown("**Powered by Google Gemini AI**")
     st.markdown("**Built with ❤️ using Streamlit**")
+    
+    # Debug Section
+    with st.expander("🛠️ Debug Info"):
+        try:
+            st.write(f"SDK Version: {genai.__version__}")
+        except:
+            st.write("SDK Version: Unknown")
+            
+        if st.button("List Available Models"):
+            try:
+                models = client.models.list()
+                for m in models:
+                    st.code(m.name)
+            except Exception as e:
+                st.error(f"Error listing models: {e}")
 
 # Enhanced Main Header
 st.markdown("""
